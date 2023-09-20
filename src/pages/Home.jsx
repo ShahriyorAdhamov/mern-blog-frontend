@@ -7,15 +7,16 @@ import { Post } from '../components/Post';
 import { TagsBlock } from '../components/TagsBlock';
 import { CommentsBlock } from '../components/CommentsBlock';
 import { useSelector, useDispatch  } from "react-redux";
-import { fetchPosts } from '../redux/slices/post';
-import { fetchAuthMe } from '../redux/slices/auth';
+import { fetchPosts, fetchTags } from '../redux/slices/post';
+
+
 export const Home = () => {
-  const {isLoading, posts} = useSelector(state => state.posts)
+  const {isLoading, posts, tags} = useSelector(state => state.posts)
   const {user} = useSelector(state => state.auth)
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchAuthMe())
-    dispatch(fetchPosts())
+    dispatch(fetchPosts());
+    dispatch(fetchTags());
   }, [dispatch])
   return (
     <>
@@ -44,7 +45,7 @@ export const Home = () => {
           )})}
         </Grid>
         <Grid xs={4} item>
-          <TagsBlock items={['react', 'typescript', 'заметки']} isLoading={false} />
+          <TagsBlock items={tags} isLoading={false} />
           <CommentsBlock
             items={[
               {

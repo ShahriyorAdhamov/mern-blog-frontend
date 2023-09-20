@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Clear';
 import EditIcon from '@mui/icons-material/Edit';
-import EyeIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import CommentIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 
 import styles from './Post.module.scss';
@@ -51,7 +50,7 @@ export const Post = ({
       {imageUrl && (
         <img
           className={clsx(styles.image, { [styles.imageFull]: isFullPost })}
-          src={imageUrl}
+          src={isFullPost? imageUrl: 'http://localhost:3002/' + imageUrl}
           alt={title}
         />
       )}
@@ -62,7 +61,7 @@ export const Post = ({
             {isFullPost ? title : <Link to={`/posts/${id}`}>{title}</Link>}
           </h2>
           <ul className={styles.tags}>
-            {tags.map((name) => (
+            {tags?.map((name) => (
               <li key={name}>
                 <Link to={`/tag/${name}`}>{name? `#${name}`: ''}</Link>
               </li>

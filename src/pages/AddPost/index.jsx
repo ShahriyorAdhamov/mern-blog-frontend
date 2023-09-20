@@ -7,12 +7,13 @@ import { useRef } from 'react';
 
 import 'easymde/dist/easymde.min.css';
 import styles from './AddPost.module.scss';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from '../../api/axios';
 import {useNavigate } from "react-router-dom";
 import {useSelector} from 'react-redux'
 
 export const AddPost = () => {
+  const {id} = useParams();
   const { isAuth } = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate();
@@ -21,6 +22,17 @@ export const AddPost = () => {
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('')
   const inputFileRef = useRef(null)
+
+  useEffect(() => {
+    if(id) {
+      axios.get(`posts/${id}`).then(({data}) => {
+        setTitle(data.title);
+        setTags(data.tags);
+        setDescription(data.description);
+        setImageUrl(data.imageUrl)
+      })
+    }
+  }, [id])
 
   useEffect(() => {
     if (!isAuth) {
@@ -33,7 +45,7 @@ export const AddPost = () => {
       const formData = new FormData();
       const file = e.target.files[0];
       formData.append('image', file)
-      const {data} = await axios.post('/uploads', formData)
+      const {data} = await axios.post('/upload', formData)
       setImageUrl(data.url)
     }catch(err) {
       console.log(err)
@@ -50,10 +62,10 @@ export const AddPost = () => {
 
   const onSubmit = async () => {
     try{
-      setIsLoading(true)
-      await axios.post('/posts', {title, description, tags, imageUrl})
-      navigate('/')
-
+      setIsLoading(true);
+      id ? await axios.patch(`/posts/${id}`, {title, description, tags, imageUrl}) : await axios.post('/posts', {title, description, tags, imageUrl}); 
+      navigate('/');
+      setIsLoading(false)
     } catch (err) {
       console.log(err)
     }
@@ -78,6 +90,7 @@ export const AddPost = () => {
   return (
 
     <Paper style={{ padding: 30 }}>
+      <form>
       <Button variant="outlined" size="large" onClick={() => inputFileRef.current.click()}>
         Загрузить превью
       </Button>
@@ -88,7 +101,7 @@ export const AddPost = () => {
         </Button>
       )}
       {imageUrl && (
-        <img className={styles.image} src={`http://localhost:4444${imageUrl}`} alt="Uploaded" />
+        <img className={styles.image} src={`http://localhost:3002/${imageUrl}`} alt="Uploaded" />
       )}
       <br />
       <br />
@@ -108,12 +121,13 @@ export const AddPost = () => {
       <SimpleMDE className={styles.editor} value={description} onChange={onChange} options={options} />
       <div className={styles.buttons}>
         <Button size="large" variant="contained" onClick={onSubmit}>
-          Опубликовать
+          {id? 'Редактировать' : 'Опубликовать'}
         </Button>
         <Link to="/">
           <Button size="large">Отмена</Button>
         </Link>
       </div>
+      </form>
     </Paper>
   );
 };

@@ -14,7 +14,7 @@ function App() {
 
   useEffect(() => {
     dispatch(fetchAuthMe())
-  }, [dispatch])
+  }, [])
   return (
     <>
       <Header />
@@ -22,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}/>
           <Route path="/posts/:id" element={<FullPost/>}/>
+          <Route path="/posts/:id/edit" element={<AddPost/>}/>
           <Route path="/create-post" element={<AddPost />}/>
           <Route path="/login" element={<Login />}/>
           <Route path="/register" element={<Registration/>}/>

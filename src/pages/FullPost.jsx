@@ -6,42 +6,33 @@ import { CommentsBlock } from "../components/CommentsBlock";
 import { useParams } from "react-router-dom";
 import axios from '../api/axios'
 export const FullPost = () => {
-  const [data, setData] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [data, setData] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
   const {id} = useParams();
-
   useEffect(() => {
-    axios.get(`products/${id}`)
-      .then((res) => {
-        setData(res.data)
-        isLoading(false)
+    setIsLoading(true)
+    axios.get(`posts/${id}`).then(({data}) => {
+        setData(data)
       }).catch((err) => {
         console.log(err)
       })
-  }, [])
+      setIsLoading(false)
+  }, [id])
   return (
     <>
       {isLoading?
       <Post isLoading={true} isFullPost/>
       :
       <Post
-        id={1}
-        title="Roast the code #1 | Rock Paper Scissors"
-        imageUrl={data.imageUrl? `http://localhost:3002${data.imageUrl}`: ''}
+        id={id}
+        title={data.title}
+        imageUrl={`http://localhost:3002/${data.imageUrl}`}
         user={data.user}
-        createdAt={"12 июня 2022 г."}
-        viewsCount={150}
+        createdAt={data.createdAt}
         commentsCount={3}
-        tags={["react", "fun", "typescript"]}
+        tags={data.tags}
         isFullPost
       >
-        <p>
-          Hey there! 👋 I'm starting a new series called "Roast the Code", where
-          I will share some code, and let YOU roast and improve it. There's not
-          much more to it, just be polite and constructive, this is an exercise
-          so we can all learn together. Now then, head over to the repo and
-          roast as hard as you can!!
-        </p>
       </Post>}
       <CommentsBlock
         items={[
