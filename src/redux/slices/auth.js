@@ -48,8 +48,9 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         logout: (state) => {
+            state.isLoading = false
             state.isAuth = false;
-            state.user = null;
+            state.user = {};
             localStorage.removeItem('token')
         }
     },
@@ -62,7 +63,6 @@ export const authSlice = createSlice({
             state.isLoading = false;
             state.isAuth = true;
             state.user = action.payload;
-            console.log(action.payload)
             localStorage.setItem('token', action.payload.token)
             
         },
@@ -76,7 +76,9 @@ export const authSlice = createSlice({
         },
         [fetchAuthMe.fulfilled]: (state, action) => {
             state.isLoading = false;
-            state.isAuth = true;
+            if(action.payload._id) {
+                state.isAuth = true;
+            }
             state.user = action.payload;
         },
         [fetchAuthMe.rejected]: (state) => {

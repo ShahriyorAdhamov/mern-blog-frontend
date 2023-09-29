@@ -65,9 +65,6 @@ const postSlice = createSlice({
         // delete post
         [fetchDeletePost.pending]: (state, action) => { 
             state.posts = state.posts.filter(obj => obj._id !== action.meta.arg)
-        },
-        [fetchDeletePost.fulfilled]: (state, action) => {
-
         }
     }
 })

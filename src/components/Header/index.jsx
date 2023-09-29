@@ -26,7 +26,7 @@ export const Header = () => {
             <div>BLOG</div>
           </a>
           <div className={styles.buttons}>
-            {isAuth ? (
+            {( isAuth) ? (
               <>
                 <Link to="/create-post">
                   <Button variant="contained">Написать статью</Button>

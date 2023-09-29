@@ -1,14 +1,26 @@
 import React, { useEffect, useState } from "react";
 
+import { useDispatch } from "react-redux";
+import {fetchGetComments} from '../redux/slices/comment'
 import { Post } from "../components/Post";
 import { Index } from "../components/AddComment";
 import { CommentsBlock } from "../components/CommentsBlock";
 import { useParams } from "react-router-dom";
 import axios from '../api/axios'
+import { useSelector } from "react-redux";
 export const FullPost = () => {
   const [data, setData] = useState({})
   const [isLoading, setIsLoading] = useState(false)
+  const [postId, setPostId] = useState('')
+  const {comments} = useSelector(state => state.comment)
   const {id} = useParams();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    setPostId(id)
+    dispatch(fetchGetComments(postId));
+  }, [id, dispatch, postId])
+
   useEffect(() => {
     setIsLoading(true)
     axios.get(`posts/${id}`).then(({data}) => {
@@ -16,8 +28,10 @@ export const FullPost = () => {
       }).catch((err) => {
         console.log(err)
       })
-      setIsLoading(false)
+    setIsLoading(false)
   }, [id])
+
+
   return (
     <>
       {isLoading?
@@ -29,28 +43,13 @@ export const FullPost = () => {
         imageUrl={`http://localhost:3002/${data.imageUrl}`}
         user={data.user}
         createdAt={data.createdAt}
-        commentsCount={3}
+        commentsCount={comments? comments.length : 0}
         tags={data.tags}
         isFullPost
       >
       </Post>}
       <CommentsBlock
-        items={[
-          {
-            user: {
-              fullName: "Вася Пупкин",
-              avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
-            },
-            text: "Это тестовый комментарий 555555",
-          },
-          {
-            user: {
-              fullName: "Иван Иванов",
-              avatarUrl: "https://mui.com/static/images/avatar/2.jpg",
-            },
-            text: "When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top",
-          },
-        ]}
+        items={comments}
         isLoading={false}
       >
         <Index />
