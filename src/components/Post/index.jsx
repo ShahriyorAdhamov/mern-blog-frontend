@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Clear';
 import EditIcon from '@mui/icons-material/Edit';
 import CommentIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import PersonAddRoundedIcon from '@mui/icons-material/PersonAddRounded';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 
 import styles from './Post.module.scss';
 
@@ -16,12 +17,14 @@ import {useDispatch, useSelector} from 'react-redux'
 import { fetchDeletePost } from '../../redux/slices/post';
 export const Post = ({
   id,
+  description,
   title,
   createdAt,
   imageUrl,
   author,
   commentsCount,
   tags,
+  viewsCount,
   children,
   isFullPost,
   isLoading,
@@ -59,7 +62,7 @@ export const Post = ({
         </div>
       ) : 
       ( 
-        <div className={styles.editButtons}>
+        isFullPost? '' : <div className={styles.editButtons}>
           <IconButton onClick={addFriendHandler}>
             <PersonAddRoundedIcon color="primary"/>
           </IconButton>
@@ -67,21 +70,21 @@ export const Post = ({
       )
 
       }
-      {imageUrl && (
-        <img
+      {imageUrl ? <img
           className={clsx(styles.image, { [styles.imageFull]: isFullPost })}
-          src={isFullPost? imageUrl: 'http://localhost:3002/' + imageUrl}
+          src={isFullPost &&'http://localhost:3002/' + imageUrl}
           alt={title}
         />
-      )}
+      : ''}
       <div className={styles.wrapper}>
         <UserInfo {...author} additionalText={createdAt} />
         <div className={styles.indention}>
           <h2 className={clsx(styles.title, { [styles.titleFull]: isFullPost })}>
             {isFullPost ? title : <Link to={`/posts/${id}`}>{title}</Link>}
           </h2>
+          <p>{description}</p>
           <ul className={styles.tags}>
-            {tags?.map((name) => (
+            {tags && tags.split(',').map((name) => (
               <li key={name}>
                 <Link to={`/tag/${name}`}>{name? `#${name}`: ''}</Link>
               </li>
@@ -93,6 +96,14 @@ export const Post = ({
               <CommentIcon />
               <span>{commentsCount}</span>
             </li>
+            <li>{
+              isFullPost? '' : 
+              <>
+                <RemoveRedEyeIcon/>
+                <span>{viewsCount}</span>
+              </>}
+ 
+            </li>  
           </ul>
         </div>
       </div>

@@ -4,13 +4,12 @@ import Tab from '@mui/material/Tab';
 import Grid from '@mui/material/Grid';
 
 import { Post } from '../components/Post';
-import { TagsBlock } from '../components/TagsBlock';
 import { useSelector, useDispatch  } from "react-redux";
 import { fetchPosts, fetchTags } from '../redux/slices/post';
 
 
 export const Home = () => {
-  const {isLoading, posts, tags} = useSelector(state => state.posts)
+  const {isLoading, posts} = useSelector(state => state.posts)
   const {user} = useSelector(state => state.auth)
   const dispatch = useDispatch();
 
@@ -39,15 +38,13 @@ export const Home = () => {
               title={obj.title}
               imageUrl={obj.imageUrl}
               author={obj.user}
+              viewsCount={obj.viewsCount}
               createdAt={obj.createdAt.slice(0, 10)}
               commentsCount={obj.comments?.length || 0}
               tags={obj.tags}
               isEditable = {obj?.user._id === user?._id}
             />
           )})}
-        </Grid>
-        <Grid xs={4} item>
-          <TagsBlock items={tags} isLoading={false} />
         </Grid>
       </Grid>
     </>
